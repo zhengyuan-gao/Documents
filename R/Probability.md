@@ -12,17 +12,17 @@ lim<sub>*n* → ∞</sub>Pr(|*S*<sub>*n*</sub>/*n* − *μ*|&lt;*ϵ*)
 
 ``` r
 mu = 1/2
-eps = 0.01
+eps = 0.05
 
 wlln= function(n, mu, eps){
   pbinom(n*mu + n*eps, n, mu) - pbinom(n*mu - n*eps, n, mu)
 }
 
-st = vector(length=50000)
-for (n in 1:50000)
-st[n] <- wlln(n, mu, eps)
+st = vector(length=20000)
+for (n in 1:20000)
+st[n] = wlln(n, mu, eps)
 
-plot(st,log="x",ylab=expression(P(abs(S[n]/n - 0.5)  < 0.01)  ),main="",xlab="n",type="l")
+plot(st,log="x",ylab=expression(P(abs(S[n]/n - 0.5)  < 0.05)  ),main="",xlab="n",type="l")
 abline(h=1.0,lty=2)
 ```
 
