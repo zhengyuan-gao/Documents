@@ -1,0 +1,75 @@
+---
+title: "Probability"
+author: "Zhengyuan Gao"
+date: "9/30/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Weak Law of Large Numbers
+
+Consider $S_n = X_1 + \cdots + X_n$ as the sum of a series of binomial distributed variables with parameters $n$ and $\mu=1/2$.
+The probability $$\lim_{n\rightarrow\infty} \Pr (|S_n /n -\mu |<\epsilon)$$ is given in the following illustration with $\epsilon=0.01$. 
+
+```{r}
+mu = 1/2
+eps = 0.01
+
+wlln= function(n, mu, eps){
+  pbinom(n*mu + n*eps, n, mu) - pbinom(n*mu - n*eps, n, mu)
+}
+
+st = vector(length=50000)
+for (n in 1:50000)
+st[n] <- wlln(n, mu, eps)
+
+plot(st,log="x",ylab=expression(P(abs(S[n]/n - 0.5)  < 0.01)  ),main="",xlab="n",type="l")
+abline(h=1.0,lty=2)
+```
+
+# Strong Law of Large Number
+
+The statement is about the set $\left\{ \lim_{n\rightarrow \infty} \frac{S_n}{n} =\mu \right\}$ is an event on some sample space. 
+$$ \Pr \left\{ \lim_{n\rightarrow \infty} \frac{S_n}{n} =\mu \right\}= 1 $$
+For a $0-1$ sequence $\omega \in \Omega$, the set $\left\{ \lim_{n\rightarrow \infty} \frac{S_n}{n} =\mu \right\}$ is the set of all sequences $\omega$ with the property that $(\omega_1 + \cdots + \omega_n )/n \rightarrow \mu$ as $n\rightarrow \infty$. This set is in fact an event contained in $\Omega$. And the strong law of large numbers says that this probability is equal to $1$.
+
+The *Weierstrass approximation theorem* says that a continuous function $f$ on $[0,1]$ can be approximated arbitrarily closely by polynomials. In particular, for $0 \leq p \leq 1$,
+$$
+\sum_{k=0}^{n}f(\frac{k}{n})C^{n}_{k}p^{k}(1-p)^{n-k} \rightarrow f(p)
+$$
+as $n\rightarrow \infty$. The $n$-th degree polynomial function of $p$ on the left-hand side is known as the Bernstein polynomial.
+
+Consider as before $S_n = X_1 + \cdots + X_n$ as the sum of a series of binomial distributed variables with parameters $n$ and $\mu=p$. By the strong law of large numbers $$ \frac{X_1 +\cdots + X_n}{n} \rightarrow p$$
+with probability $1$. As $f$ is continuous, then $$ f\left( \frac{X_1 +\cdots + X_n}{n}\right) \rightarrow f(p)$$ and similarly  $$ \mathbb{E} \left[ f\left( \frac{X_1 +\cdots + X_n}{n}\right) \right] \rightarrow \mathbb{E}[f(p)] = f(p).$$
+As $$ \mathbb{E} \left[ f\left( \frac{X_1 +\cdots + X_n}{n}\right) \right] = \sum_{k=0}^{n}f(\frac{k}{n})C^{n}_{k}p^{k}(1-p)^{n-k}$$ we prove the Weierstrass approximation theorem.
+
+```{r}
+par(mfrow=c(2,2))
+sllnBern = function(n,p){ 
+for (i in 1:4) {
+	seq = rbinom(n,1,p)
+	avgs = cumsum(seq)/(1:n)
+    plot(avgs,type="l",xlab="n",ylab="Average")
+    abline(h = p)}
+}
+  
+sllnBern(1000,.5)  
+```
+
+Also we can see Cauchy distribution whose expectation does not exist so that SLLN does not apply.
+
+```{r}
+par(mfrow=c(3,3), mar = c(5,5,1,2), cex=0.3)
+sllnCauchy = function(n) {
+for (i in 1:9) {
+	seq = rcauchy(n)
+	avgs = cumsum(seq)/(1:n)
+    plot(avgs,type="l",xlab="n",ylab="Average")
+    abline(h = 0)
+    }
+ }
+sllnCauchy(50000)
+```
